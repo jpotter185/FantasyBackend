@@ -13,13 +13,15 @@ import (
 
 // PlayerHandler handles HTTP requests for players
 type PlayerHandler struct {
-	playerService services.PlayerService
+	playerService      services.PlayerService
+	playerStatsService services.PlayerStatsService
 }
 
 // NewPlayerHandler creates a new player handler
-func NewPlayerHandler(playerService services.PlayerService) *PlayerHandler {
+func NewPlayerHandler(playerService services.PlayerService, playerStatsService services.PlayerStatsService) *PlayerHandler {
 	return &PlayerHandler{
-		playerService: playerService,
+		playerService:      playerService,
+		playerStatsService: playerStatsService,
 	}
 }
 
@@ -117,24 +119,90 @@ func (h *PlayerHandler) DeletePlayer(w http.ResponseWriter, r *http.Request) {
 
 // GetPlayerStats handles GET /api/players/{id}/stats
 func (h *PlayerHandler) GetPlayerStats(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement when player stats service is created
-	http.Error(w, "Not implemented yet", http.StatusNotImplemented)
+	vars := mux.Vars(r)
+	playerID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(w, "Invalid player ID", http.StatusBadRequest)
+		return
+	}
+
+	stats, err := h.playerStatsService.GetPlayerStatsByPlayer(playerID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(stats)
 }
 
 // CreatePlayerStats handles POST /api/players/{id}/stats
 func (h *PlayerHandler) CreatePlayerStats(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement when player stats service is created
-	http.Error(w, "Not implemented yet", http.StatusNotImplemented)
+	vars := mux.Vars(r)
+	playerID, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		http.Error(w, "Invalid player ID", http.StatusBadRequest)
+		return
+	}
+
+	var req models.CreatePlayerStatsRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	// Set the player ID from the URL
+	req.PlayerID = playerID
+
+	stats, err := h.playerStatsService.CreatePlayerStats(&req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(stats)
 }
 
 // DeletePlayerStats handles DELETE /api/players/{id}/stats/{stats_id}
 func (h *PlayerHandler) DeletePlayerStats(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement when player stats service is created
-	http.Error(w, "Not implemented yet", http.StatusNotImplemented)
+	vars := mux.Vars(r)
+	statsID, err := strconv.Atoi(vars["stats_id"])
+	if err != nil {
+		http.Error(w, "Invalid stats ID", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.playerStatsService.DeletePlayerStats(statsID); err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // UpdatePlayerStats handles PUT /api/players/{id}/stats/{stats_id}
 func (h *PlayerHandler) UpdatePlayerStats(w http.ResponseWriter, r *http.Request) {
-	// TODO: Implement when player stats service is created
-	http.Error(w, "Not implemented yet", http.StatusNotImplemented)
+	vars := mux.Vars(r)
+	statsID, err := strconv.Atoi(vars["stats_id"])
+	if err != nil {
+		http.Error(w, "Invalid stats ID", http.StatusBadRequest)
+		return
+	}
+
+	var req models.UpdatePlayerStatsRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	stats, err := h.playerStatsService.UpdatePlayerStats(statsID, &req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(stats)
 }

@@ -27,14 +27,19 @@ func main() {
 	// Initialize repositories
 	teamRepo := repositories.NewTeamRepository(database.DB)
 	playerRepo := repositories.NewPlayerRepository(database.DB)
+	playerStatsRepo := repositories.NewPlayerStatsRepository(database.DB)
+	gameRepo := repositories.NewGameRepository(database.DB)
 
 	// Initialize services
 	teamService := services.NewTeamService(teamRepo)
 	playerService := services.NewPlayerService(playerRepo, teamRepo)
+	playerStatsService := services.NewPlayerStatsService(playerStatsRepo, playerRepo)
+	gameService := services.NewGameService(gameRepo, teamRepo)
 
 	// Initialize handlers
 	teamHandler := handlers.NewTeamHandler(teamService)
-	playerHandler := handlers.NewPlayerHandler(playerService)
+	playerHandler := handlers.NewPlayerHandler(playerService, playerStatsService)
+	gameHandler := handlers.NewGameHandler(gameService)
 
 	// Create router
 	router := mux.NewRouter()
@@ -64,6 +69,16 @@ func main() {
 	apiRouter.HandleFunc("/players/{id}/stats", playerHandler.CreatePlayerStats).Methods("POST")
 	apiRouter.HandleFunc("/players/{id}/stats/{stats_id}", playerHandler.UpdatePlayerStats).Methods("PUT")
 	apiRouter.HandleFunc("/players/{id}/stats/{stats_id}", playerHandler.DeletePlayerStats).Methods("DELETE")
+
+	// Games routes
+	apiRouter.HandleFunc("/games", gameHandler.GetGames).Methods("GET")
+	apiRouter.HandleFunc("/games", gameHandler.CreateGame).Methods("POST")
+	apiRouter.HandleFunc("/games/{id}", gameHandler.GetGame).Methods("GET")
+	apiRouter.HandleFunc("/games/{id}", gameHandler.UpdateGame).Methods("PUT")
+	apiRouter.HandleFunc("/games/{id}", gameHandler.DeleteGame).Methods("DELETE")
+	apiRouter.HandleFunc("/teams/{id}/games", gameHandler.GetGamesByTeam).Methods("GET")
+	apiRouter.HandleFunc("/games/season/{season}", gameHandler.GetGamesBySeason).Methods("GET")
+	apiRouter.HandleFunc("/games/season/{season}/week/{week}", gameHandler.GetGamesByWeek).Methods("GET")
 
 	// Health check endpoint
 	router.HandleFunc("/health", func(responseWriter http.ResponseWriter, request *http.Request) {

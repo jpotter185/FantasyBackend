@@ -6,8 +6,8 @@ A professional Go-based REST API for managing American football teams, players, 
 
 - **Teams Management**: Create and manage NFL teams with conference and division information
 - **Player Management**: Add and manage players with detailed physical attributes and positions
-- **Games Management**: Create and manage football games with scores, status, and week tracking
-- **Player Statistics**: Comprehensive football statistics including offensive, defensive, and special teams stats
+- **Games Management**: Create and manage football games with scores, status, and week tracking with full CRUD operations
+- **Player Statistics**: Comprehensive football statistics including offensive, defensive, and special teams stats with full CRUD operations
 - **Clean Architecture**: Layered architecture with handlers, services, and repositories
 - **RESTful API**: Clean, RESTful endpoints following proper resource-based organization
 - **SQLite Database**: Lightweight, file-based database with proper foreign key relationships
@@ -50,6 +50,7 @@ The server will start on port 8080 by default. You can change this by setting th
 - `GET /api/teams/{id}` - Get a specific team
 - `PUT /api/teams/{id}` - Update a team
 - `DELETE /api/teams/{id}` - Delete a team
+- `GET /api/teams/{id}/games` - Get all games for a specific team
 - `GET /api/teams/{id}/stats` - Get statistics for a specific team (coming soon)
 - `POST /api/teams/{id}/stats` - Create team statistics (coming soon)
 
@@ -59,10 +60,19 @@ The server will start on port 8080 by default. You can change this by setting th
 - `GET /api/players/{id}` - Get a specific player
 - `PUT /api/players/{id}` - Update a player
 - `DELETE /api/players/{id}` - Delete a player
-- `GET /api/players/{id}/stats` - Get statistics for a specific player (coming soon)
-- `POST /api/players/{id}/stats` - Create player statistics (coming soon)
-- `PUT /api/players/{id}/stats/{stats_id}` - Update player statistics (coming soon)
-- `DELETE /api/players/{id}/stats/{stats_id}` - Delete player statistics (coming soon)
+- `GET /api/players/{id}/stats` - Get all statistics for a specific player
+- `POST /api/players/{id}/stats` - Create new player statistics for a game
+- `PUT /api/players/{id}/stats/{stats_id}` - Update existing player statistics
+- `DELETE /api/players/{id}/stats/{stats_id}` - Delete player statistics
+
+### Games
+- `GET /api/games` - Get all games
+- `POST /api/games` - Create a new game
+- `GET /api/games/{id}` - Get a specific game
+- `PUT /api/games/{id}` - Update a game
+- `DELETE /api/games/{id}` - Delete a game
+- `GET /api/games/season/{season}` - Get all games for a specific season
+- `GET /api/games/season/{season}/week/{week}` - Get all games for a specific week in a season
 
 ## 📝 API Usage Examples
 
@@ -113,6 +123,88 @@ curl http://localhost:8080/api/teams
 curl http://localhost:8080/api/players
 ```
 
+### Create Player Statistics
+```bash
+curl -X POST http://localhost:8080/api/players/1/stats \
+  -H "Content-Type: application/json" \
+  -d '{
+    "game_id": 1,
+    "passing_attempts": 35,
+    "passing_completions": 28,
+    "passing_yards": 350,
+    "passing_touchdowns": 3,
+    "passing_interceptions": 1,
+    "rushing_attempts": 5,
+    "rushing_yards": 25,
+    "rushing_touchdowns": 1
+  }'
+```
+
+### Get Player Statistics
+```bash
+curl http://localhost:8080/api/players/1/stats
+```
+
+### Update Player Statistics
+```bash
+curl -X PUT http://localhost:8080/api/players/1/stats/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "passing_yards": 375,
+    "passing_touchdowns": 4
+  }'
+```
+
+### Delete Player Statistics
+```bash
+curl -X DELETE http://localhost:8080/api/players/1/stats/1
+```
+
+### Create a Game
+```bash
+curl -X POST http://localhost:8080/api/games \
+  -H "Content-Type: application/json" \
+  -d '{
+    "home_team_id": 1,
+    "away_team_id": 2,
+    "season": "2024",
+    "week": 1,
+    "game_date": "2024-09-08T13:00:00Z",
+    "status": "scheduled"
+  }'
+```
+
+### Get All Games
+```bash
+curl http://localhost:8080/api/games
+```
+
+### Get Games by Season
+```bash
+curl http://localhost:8080/api/games/season/2024
+```
+
+### Get Games by Week
+```bash
+curl http://localhost:8080/api/games/season/2024/week/1
+```
+
+### Update Game Score
+```bash
+curl -X PUT http://localhost:8080/api/games/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "completed",
+    "home_score": 28,
+    "away_score": 24
+  }'
+```
+
+### Get Team Games
+```bash
+curl http://localhost:8080/api/teams/1/games
+```
+
 ## 🏗️ Data Models
 
 ### Team
@@ -144,8 +236,70 @@ curl http://localhost:8080/api/players
 }
 ```
 
-### PlayerStats (Coming Soon)
-Comprehensive football statistics including:
+### Game
+```json
+{
+  "id": 1,
+  "home_team_id": 1,
+  "away_team_id": 2,
+  "season": "2024",
+  "week": 1,
+  "game_date": "2024-09-08T13:00:00Z",
+  "status": "completed",
+  "home_score": 28,
+  "away_score": 24,
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T10:30:00Z"
+}
+```
+
+### PlayerStats
+```json
+{
+  "id": 1,
+  "player_id": 1,
+  "game_id": 1,
+  "passing_attempts": 35,
+  "passing_completions": 28,
+  "passing_yards": 350,
+  "passing_touchdowns": 3,
+  "passing_interceptions": 1,
+  "rushing_attempts": 5,
+  "rushing_yards": 25,
+  "rushing_touchdowns": 1,
+  "receiving_targets": null,
+  "receptions": null,
+  "receiving_yards": null,
+  "receiving_touchdowns": null,
+  "fumbles": 0,
+  "fumbles_lost": 0,
+  "tackles": null,
+  "solo_tackles": null,
+  "assisted_tackles": null,
+  "sacks": null,
+  "defensive_interceptions": null,
+  "pass_deflections": null,
+  "forced_fumbles": null,
+  "fumble_recoveries": null,
+  "defensive_touchdowns": null,
+  "field_goals_attempted": null,
+  "field_goals_made": null,
+  "extra_points_attempted": null,
+  "extra_points_made": null,
+  "punts": null,
+  "punt_yards": null,
+  "kick_returns": null,
+  "kick_return_yards": null,
+  "kick_return_touchdowns": null,
+  "punt_returns": null,
+  "punt_return_yards": null,
+  "punt_return_touchdowns": null,
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T10:30:00Z"
+}
+```
+
+**Comprehensive football statistics including:**
 - **Offensive**: Passing attempts, completions, yards, touchdowns, interceptions
 - **Rushing**: Attempts, yards, touchdowns
 - **Receiving**: Targets, receptions, yards, touchdowns
@@ -159,8 +313,8 @@ The application uses SQLite for data storage. The database file (`sports.db`) wi
 ### Database Schema
 - **teams**: Team information with conference and division
 - **players**: Player information with team relationships
-- **games**: Game information (coming soon)
-- **player_stats**: Detailed player statistics (coming soon)
+- **games**: Game information with home/away teams, scores, and scheduling
+- **player_stats**: Detailed player statistics with comprehensive football metrics
 
 ## 🌍 Environment Variables
 
@@ -177,14 +331,19 @@ sports-backend/
 │   ├── player.go             # Player and PlayerStats models
 │   └── team.go               # Team and Game models
 ├── handlers/
+│   ├── game_handler.go       # Game HTTP handlers
 │   ├── player_handler.go     # Player HTTP handlers
 │   └── team_handler.go       # Team HTTP handlers
 ├── services/
-│   ├── player_service.go     # Player business logic
-│   └── team_service.go       # Team business logic
+│   ├── game_service.go           # Game business logic
+│   ├── player_service.go         # Player business logic
+│   ├── player_stats_service.go   # Player stats business logic
+│   └── team_service.go           # Team business logic
 ├── repositories/
-│   ├── player_repository.go  # Player data access
-│   └── team_repository.go    # Team data access
+│   ├── game_repository.go        # Game data access
+│   ├── player_repository.go      # Player data access
+│   ├── player_stats_repository.go # Player stats data access
+│   └── team_repository.go        # Team data access
 ├── database/
 │   └── migrations.go         # Database migrations
 └── README.md                 # This file
@@ -250,11 +409,41 @@ curl http://localhost:8080/api/players
      -d '{"team_id": 2, "first_name": "Josh", "last_name": "Allen", "position": "QB", "jersey_number": 17}'
    ```
 
+4. **Create a game**:
+   ```bash
+   curl -X POST http://localhost:8080/api/games \
+     -H "Content-Type: application/json" \
+     -d '{
+       "home_team_id": 1,
+       "away_team_id": 2,
+       "season": "2024",
+       "week": 1,
+       "game_date": "2024-09-08T13:00:00Z",
+       "status": "scheduled"
+     }'
+   ```
+
+5. **Create player statistics**:
+   ```bash
+   curl -X POST http://localhost:8080/api/players/1/stats \
+     -H "Content-Type: application/json" \
+     -d '{
+       "game_id": 1,
+       "passing_attempts": 35,
+       "passing_completions": 28,
+       "passing_yards": 350,
+       "passing_touchdowns": 3,
+       "passing_interceptions": 1,
+       "rushing_attempts": 5,
+       "rushing_yards": 25,
+       "rushing_touchdowns": 1
+     }'
+   ```
+
 ## 🔮 Future Enhancements
 
-- **Games Management**: Complete game creation and management
-- **Player Statistics**: Full statistics tracking and analysis
 - **Team Statistics**: Team-level performance metrics
+- **Game Statistics**: Game-level performance metrics
 - **Authentication**: JWT-based authentication and authorization
 - **Data Validation**: Enhanced input validation middleware
 - **Rate Limiting**: API rate limiting for production use

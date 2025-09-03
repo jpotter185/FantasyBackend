@@ -84,3 +84,82 @@ type UpdatePlayerRequest struct {
 	Height       *int    `json:"height,omitempty"`
 	Weight       *int    `json:"weight,omitempty"`
 }
+
+// Request/Response structs for PlayerStats
+type CreatePlayerStatsRequest struct {
+	PlayerID               int  `json:"player_id" validate:"required"`
+	GameID                 int  `json:"game_id" validate:"required"`
+	PassingAttempts        *int `json:"passing_attempts,omitempty"`
+	PassingCompletions     *int `json:"passing_completions,omitempty"`
+	PassingYards           *int `json:"passing_yards,omitempty"`
+	PassingTouchdowns      *int `json:"passing_touchdowns,omitempty"`
+	PassingInterceptions   *int `json:"passing_interceptions,omitempty"`
+	RushingAttempts        *int `json:"rushing_attempts,omitempty"`
+	RushingYards           *int `json:"rushing_yards,omitempty"`
+	RushingTouchdowns      *int `json:"rushing_touchdowns,omitempty"`
+	ReceivingTargets       *int `json:"receiving_targets,omitempty"`
+	Receptions             *int `json:"receptions,omitempty"`
+	ReceivingYards         *int `json:"receiving_yards,omitempty"`
+	ReceivingTouchdowns    *int `json:"receiving_touchdowns,omitempty"`
+	Fumbles                *int `json:"fumbles,omitempty"`
+	FumblesLost            *int `json:"fumbles_lost,omitempty"`
+	Tackles                *int `json:"tackles,omitempty"`
+	SoloTackles            *int `json:"solo_tackles,omitempty"`
+	AssistedTackles        *int `json:"assisted_tackles,omitempty"`
+	Sacks                  *int `json:"sacks,omitempty"`
+	DefensiveInterceptions *int `json:"defensive_interceptions,omitempty"`
+	PassDeflections        *int `json:"pass_deflections,omitempty"`
+	ForcedFumbles          *int `json:"forced_fumbles,omitempty"`
+	FumbleRecoveries       *int `json:"fumble_recoveries,omitempty"`
+	DefensiveTouchdowns    *int `json:"defensive_touchdowns,omitempty"`
+	FieldGoalsAttempted    *int `json:"field_goals_attempted,omitempty"`
+	FieldGoalsMade         *int `json:"field_goals_made,omitempty"`
+	ExtraPointsAttempted   *int `json:"extra_points_attempted,omitempty"`
+	ExtraPointsMade        *int `json:"extra_points_made,omitempty"`
+	Punts                  *int `json:"punts,omitempty"`
+	PuntYards              *int `json:"punt_yards,omitempty"`
+	KickReturns            *int `json:"kick_returns,omitempty"`
+	KickReturnYards        *int `json:"kick_return_yards,omitempty"`
+	KickReturnTouchdowns   *int `json:"kick_return_touchdowns,omitempty"`
+	PuntReturns            *int `json:"punt_returns,omitempty"`
+	PuntReturnYards        *int `json:"punt_return_yards,omitempty"`
+	PuntReturnTouchdowns   *int `json:"punt_return_touchdowns,omitempty"`
+}
+
+type UpdatePlayerStatsRequest struct {
+	PassingAttempts        *int `json:"passing_attempts,omitempty"`
+	PassingCompletions     *int `json:"passing_completions,omitempty"`
+	PassingYards           *int `json:"passing_yards,omitempty"`
+	PassingTouchdowns      *int `json:"passing_touchdowns,omitempty"`
+	PassingInterceptions   *int `json:"passing_interceptions,omitempty"`
+	RushingAttempts        *int `json:"rushing_attempts,omitempty"`
+	RushingYards           *int `json:"rushing_yards,omitempty"`
+	RushingTouchdowns      *int `json:"rushing_touchdowns,omitempty"`
+	ReceivingTargets       *int `json:"receiving_targets,omitempty"`
+	Receptions             *int `json:"receptions,omitempty"`
+	ReceivingYards         *int `json:"receiving_yards,omitempty"`
+	ReceivingTouchdowns    *int `json:"receiving_touchdowns,omitempty"`
+	Fumbles                *int `json:"fumbles,omitempty"`
+	FumblesLost            *int `json:"fumbles_lost,omitempty"`
+	Tackles                *int `json:"tackles,omitempty"`
+	SoloTackles            *int `json:"solo_tackles,omitempty"`
+	AssistedTackles        *int `json:"assisted_tackles,omitempty"`
+	Sacks                  *int `json:"sacks,omitempty"`
+	DefensiveInterceptions *int `json:"defensive_interceptions,omitempty"`
+	PassDeflections        *int `json:"pass_deflections,omitempty"`
+	ForcedFumbles          *int `json:"forced_fumbles,omitempty"`
+	FumbleRecoveries       *int `json:"fumble_recoveries,omitempty"`
+	DefensiveTouchdowns    *int `json:"defensive_touchdowns,omitempty"`
+	FieldGoalsAttempted    *int `json:"field_goals_attempted,omitempty"`
+	FieldGoalsMade         *int `json:"field_goals_made,omitempty"`
+	ExtraPointsAttempted   *int `json:"extra_points_attempted,omitempty"`
+	ExtraPointsMade        *int `json:"extra_points_made,omitempty"`
+	Punts                  *int `json:"punts,omitempty"`
+	PuntYards              *int `json:"punt_yards,omitempty"`
+	KickReturns            *int `json:"kick_returns,omitempty"`
+	KickReturnYards        *int `json:"kick_return_yards,omitempty"`
+	KickReturnTouchdowns   *int `json:"kick_return_touchdowns,omitempty"`
+	PuntReturns            *int `json:"punt_returns,omitempty"`
+	PuntReturnYards        *int `json:"punt_return_yards,omitempty"`
+	PuntReturnTouchdowns   *int `json:"punt_return_touchdowns,omitempty"`
+}

@@ -44,3 +44,26 @@ type UpdateTeamRequest struct {
 	Conference *string `json:"conference,omitempty"`
 	Division   *string `json:"division,omitempty"`
 }
+
+// Request/Response structs for Games
+type CreateGameRequest struct {
+	HomeTeamID int       `json:"home_team_id" validate:"required"`
+	AwayTeamID int       `json:"away_team_id" validate:"required"`
+	Season     string    `json:"season" validate:"required"`
+	Week       int       `json:"week" validate:"required,min=1,max=22"`
+	GameDate   time.Time `json:"game_date" validate:"required"`
+	Status     string    `json:"status,omitempty" validate:"omitempty,oneof=scheduled in_progress completed cancelled"`
+	HomeScore  *int      `json:"home_score,omitempty" validate:"omitempty,min=0"`
+	AwayScore  *int      `json:"away_score,omitempty" validate:"omitempty,min=0"`
+}
+
+type UpdateGameRequest struct {
+	HomeTeamID *int       `json:"home_team_id,omitempty"`
+	AwayTeamID *int       `json:"away_team_id,omitempty"`
+	Season     *string    `json:"season,omitempty"`
+	Week       *int       `json:"week,omitempty" validate:"omitempty,min=1,max=22"`
+	GameDate   *time.Time `json:"game_date,omitempty"`
+	Status     *string    `json:"status,omitempty" validate:"omitempty,oneof=scheduled in_progress completed cancelled"`
+	HomeScore  *int       `json:"home_score,omitempty" validate:"omitempty,min=0"`
+	AwayScore  *int       `json:"away_score,omitempty" validate:"omitempty,min=0"`
+}
